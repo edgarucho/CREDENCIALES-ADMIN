@@ -8,4 +8,4 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzeaIY2Fjtk6ZFtJo8vDeFZ
 
 // 2. La direccion publica de la pagina del cliente.
 //    Sin ?t= al final, el sistema lo agrega solo.
-const CLIENTE_URL = 'https://edgarucho.github.io/credenciales-cliente/';
+const CLIENTE_URL = 'https://edgarucho.github.io/CREDENCIALES-CLIENTES/';
