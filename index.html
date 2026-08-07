@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#241d16">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Credenciales">
+<title>Credenciales — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Archivo:wdth,wght@75..100,400;75..100,500;75..100,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241d16; --ink-2:#2e2720; --ink-3:#3a3128;
+    --paper:#f6efe5; --accent:#c5572a; --accent-luz:#e07a4d;
+    --verde:#6d8c5a; --muted:#9a8d7f; --muted-2:#786d61;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ink);color:var(--paper);
+       font-family:Archivo,system-ui,sans-serif;font-size:15px;line-height:1.55;
+       -webkit-font-smoothing:antialiased;
+       padding:env(safe-area-inset-top) env(safe-area-inset-right)
+               env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  .marco{max-width:1000px;margin:0 auto;padding:22px 16px 60px}
+  @media(min-width:760px){.marco{padding:26px 22px 70px}}
+
+  .rotulo{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+          font-weight:600;font-stretch:87%;color:var(--muted)}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;
+        font-variant-numeric:tabular-nums}
+
+  .firma{display:flex;align-items:center;gap:10px}
+  .lente{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--accent);
+         position:relative;flex:none}
+  .lente::after{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--accent)}
+  h1{font-family:'Bricolage Grotesque',Archivo,sans-serif;font-weight:700;
+     font-size:clamp(26px,7vw,34px);letter-spacing:-.03em;margin:14px 0 22px}
+
+  .seccion{display:flex;justify-content:space-between;align-items:center;
+           gap:12px;margin:34px 0 12px;flex-wrap:wrap}
+  h2{font-family:'Bricolage Grotesque',Archivo,sans-serif;font-weight:700;
+     font-size:19px;letter-spacing:-.02em;margin:0}
+  .cuenta{color:var(--muted);font-size:13px}
+
+  .panel{background:var(--ink-2);border:1px solid var(--ink-3);border-radius:14px;padding:18px}
+
+  label{display:block;margin-bottom:7px}
+  input{width:100%;padding:14px 14px;border:1px solid var(--ink-3);border-radius:10px;
+        background:var(--ink);font-family:inherit;font-size:16px;color:var(--paper)}
+  input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(197,87,42,.2)}
+
+  .btn{background:var(--accent);color:#fff;border:none;padding:15px 24px;border-radius:10px;
+       font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;min-height:50px;
+       transition:background .18s}
+  .btn:hover:not(:disabled){background:#b34c22}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ancho{width:100%;margin-top:14px}
+  @media(min-width:600px){.btn-ancho{width:auto;min-width:190px}}
+
+  .btn-min{background:none;border:1px solid var(--ink-3);color:var(--paper);
+           padding:10px 16px;border-radius:9px;font-family:inherit;font-size:14px;
+           cursor:pointer;min-height:42px;transition:border-color .18s,color .18s}
+  .btn-min:hover{border-color:var(--accent);color:var(--accent-luz)}
+  .btn-min.peligro:hover{border-color:#e24b4a;color:#f09595}
+
+  .aviso{margin-top:14px;padding:13px 15px;border-radius:10px;font-size:14px;display:none}
+  .aviso.ok{display:block;background:rgba(109,140,90,.16);color:#a8ce97}
+  .aviso.mal{display:block;background:rgba(197,87,42,.18);color:#f0a67f}
+
+  /* -------------------------------------------------------- enlace recien hecho */
+  .recien{display:none;margin-top:16px;padding:16px;border-radius:12px;
+          background:rgba(197,87,42,.12);border:1px solid rgba(197,87,42,.32)}
+  .recien.on{display:block}
+  .recien .quien{font-weight:600;margin-bottom:9px}
+  .recien .liga{background:var(--ink);border:1px solid var(--ink-3);border-radius:9px;
+                padding:11px 13px;font-family:'JetBrains Mono',monospace;font-size:12px;
+                color:var(--muted);word-break:break-all;line-height:1.5}
+  .recien .acciones{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .recien .acciones button{flex:1;min-width:130px}
+
+  /* ------------------------------------------------------------------- listas */
+  .lista{display:flex;flex-direction:column;gap:10px}
+  .cabecera{display:none}
+
+  .item{background:var(--ink-2);border:1px solid var(--ink-3);border-radius:12px;padding:15px}
+  .item .celda{display:flex;justify-content:space-between;gap:14px;padding:5px 0}
+  .item .celda::before{content:attr(data-rot);color:var(--muted-2);font-size:10.5px;
+    letter-spacing:.16em;text-transform:uppercase;font-weight:600;font-stretch:87%;
+    flex:none;padding-top:3px}
+  .item .valor{text-align:right;min-width:0;word-break:break-word}
+  .item .acciones{display:flex;gap:9px;margin-top:12px;padding-top:13px;
+                  border-top:1px solid var(--ink-3);flex-wrap:wrap}
+  .item .acciones button{flex:1;min-width:120px}
+  .item .acciones:empty{display:none}
+
+  @media(min-width:820px){
+    .cabecera{display:grid;padding:0 15px 9px;gap:12px}
+    .cabecera span{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+                   font-weight:600;font-stretch:87%;color:var(--muted-2)}
+    .item{display:grid;gap:12px;align-items:center;padding:13px 15px}
+    .item .celda{display:block;padding:0;min-width:0}
+    .item .celda::before{display:none}
+    .item .valor{text-align:left}
+    .item .acciones{margin:0;padding:0;border:none;justify-content:flex-end}
+    .item .acciones button{flex:none;min-width:0}
+    .g-ped,.g-ped-h{grid-template-columns:88px 1.5fr 100px 52px 84px 96px 130px}
+    .g-acc,.g-acc-h{grid-template-columns:1.6fr 116px 100px 88px 210px}
+  }
+
+  .pill{display:inline-block;padding:4px 11px;border-radius:99px;font-size:11px;
+        letter-spacing:.06em;text-transform:uppercase;font-weight:600;font-stretch:87%}
+  .p-autorizado,.p-nuevo{background:rgba(197,87,42,.2);color:#e8926b}
+  .p-descargado{background:rgba(109,140,90,.18);color:#a8ce97}
+  .p-usado,.p-cancelado{background:rgba(255,255,255,.08);color:var(--muted)}
+  .notita{color:var(--muted);font-size:13px;margin-top:3px}
+
+  .vacio{padding:30px 16px;color:var(--muted);text-align:center;
+         border:1px dashed var(--ink-3);border-radius:12px}
+
+  /* ------------------------------------------------------------------- modal */
+  .modal{position:fixed;inset:0;background:rgba(15,12,9,.9);z-index:60;display:none;
+         align-items:center;justify-content:center;padding:20px}
+  .modal.on{display:flex}
+  .modal-caja{background:var(--ink-2);border:1px solid var(--ink-3);border-radius:16px;
+              padding:26px;max-width:420px;width:100%}
+  .modal h3{font-family:'Bricolage Grotesque',Archivo,sans-serif;font-weight:700;
+            font-size:20px;margin:0 0 10px;letter-spacing:-.02em}
+  .modal p{margin:0 0 20px;color:var(--muted);font-size:14.5px}
+  .modal .juego{display:flex;gap:11px;flex-wrap:wrap}
+  .modal .juego button{flex:1;min-width:130px}
+
+  .puerta{max-width:360px;margin:12vh auto 0}
+  .oculto{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="marco">
+
+  <!-- ============================================================== puerta -->
+  <div id="puerta" class="puerta">
+    <div class="firma"><span class="lente"></span><span class="rotulo">Foto Estudio Graciela</span></div>
+    <h1>Credenciales</h1>
+    <div class="panel">
+      <label class="rotulo" for="pass">Contraseña</label>
+      <input type="password" id="pass" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')entrar()">
+      <button class="btn btn-ancho" id="btnEntrar" onclick="entrar()">Entrar</button>
+      <div class="aviso" id="avisoPuerta"></div>
+    </div>
+  </div>
+
+  <!-- =============================================================== panel -->
+  <div id="panel" class="oculto">
+    <div class="firma"><span class="lente"></span><span class="rotulo">Foto Estudio Graciela</span></div>
+    <h1>Credenciales</h1>
+
+    <div class="panel">
+      <label class="rotulo" for="cliente">Nombre del cliente</label>
+      <input type="text" id="cliente" placeholder="Escuela Benito Juárez"
+             autocomplete="off" onkeydown="if(event.key==='Enter')crear()">
+      <button class="btn btn-ancho" id="btnCrear" onclick="crear()">Crear enlace</button>
+      <div class="aviso" id="avisoCrear"></div>
+
+      <div class="recien" id="recien">
+        <div class="quien" id="recienQuien"></div>
+        <div class="liga" id="recienLiga"></div>
+        <div class="acciones">
+          <button class="btn" id="btnCompartir" onclick="compartir()">Compartir</button>
+          <button class="btn-min" onclick="copiar()">Copiar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="seccion">
+      <h2>Pedidos</h2>
+      <button class="btn-min peligro oculto" id="btnVaciarPed"
+              onclick="preguntarVaciar('pedidos')">Vaciar</button>
+    </div>
+    <div class="cabecera g-ped-h" id="cabPed">
+      <span>Pedido</span><span>Cliente</span><span>Fecha</span><span>Cant.</span>
+      <span>Forma</span><span>Estado</span><span></span>
+    </div>
+    <div class="lista" id="listaPedidos"></div>
+    <div class="vacio oculto" id="sinPedidos">Todavía no llega ningún pedido.</div>
+
+    <div class="seccion">
+      <h2>Enlaces</h2>
+      <button class="btn-min peligro oculto" id="btnVaciarAcc"
+              onclick="preguntarVaciar('accesos')">Vaciar</button>
+    </div>
+    <div class="cabecera g-acc-h" id="cabAcc">
+      <span>Cliente</span><span>Creado</span><span>Estado</span><span>Pedido</span><span></span>
+    </div>
+    <div class="lista" id="listaAccesos"></div>
+    <div class="vacio oculto" id="sinAccesos">Todavía no has creado enlaces.</div>
+  </div>
+
+</div>
+
+<!-- ================================================================= modal -->
+<div class="modal" id="modal">
+  <div class="modal-caja">
+    <h3 id="modalTitulo"></h3>
+    <p id="modalTexto"></p>
+    <div class="juego">
+      <button class="btn" id="modalSi">Sí, vaciar</button>
+      <button class="btn-min" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+var PASS = '';
+var ultimoEnlace = '';
+var ultimoCliente = '';
+var datos = { pedidos: [], accesos: [] };
+
+var ETIQUETA = {
+  autorizado: 'en camino', nuevo: 'en camino', descargado: 'en tu PC',
+  usado: 'usado', cancelado: 'cancelado'
+};
+
+async function api(accion, extra) {
+  var r = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ accion: accion }, extra || {}))
+  });
+  var d = await r.json();
+  if (!d.ok) throw new Error(d.error || 'Algo salió mal.');
+  return d;
+}
+
+function aviso(id, texto, ok) {
+  var el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = 'aviso ' + (ok ? 'ok' : 'mal');
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+
+function urlCliente(token) { return CLIENTE_URL + '?t=' + token; }
+
+/* ------------------------------------------------------------------ entrar */
+
+async function entrar() {
+  var p = document.getElementById('pass').value;
+  var btn = document.getElementById('btnEntrar');
+  btn.disabled = true;
+  try {
+    await api('entrarAdmin', { pass: p });
+    PASS = p;
+    document.getElementById('puerta').classList.add('oculto');
+    document.getElementById('panel').classList.remove('oculto');
+    refrescar();
+    setInterval(refrescar, 20000);
+  } catch (e) {
+    btn.disabled = false;
+    aviso('avisoPuerta', e.message, false);
+  }
+}
+
+/* ------------------------------------------------------------ crear enlace */
+
+async function crear() {
+  var cliente = document.getElementById('cliente').value;
+  var btn = document.getElementById('btnCrear');
+  btn.disabled = true;
+  try {
+    var r = await api('crearAcceso', { pass: PASS, cliente: cliente });
+    ultimoEnlace = urlCliente(r.token);
+    ultimoCliente = r.cliente;
+
+    document.getElementById('cliente').value = '';
+    document.getElementById('recienQuien').textContent = 'Enlace para ' + r.cliente;
+    document.getElementById('recienLiga').textContent = ultimoEnlace;
+    document.getElementById('recien').classList.add('on');
+    document.getElementById('avisoCrear').className = 'aviso';
+    refrescar();
+  } catch (e) {
+    aviso('avisoCrear', e.message, false);
+  }
+  btn.disabled = false;
+}
+
+function compartir() {
+  var texto = 'Hola ' + ultimoCliente + ', arma aquí tu credencial: ' + ultimoEnlace;
+  if (navigator.share) {
+    navigator.share({ title: 'Tu credencial', text: texto }).catch(function () {});
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
+  }
+}
+
+function copiar() {
+  var t = ultimoEnlace;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(t)
+      .then(function () { aviso('avisoCrear', 'Enlace copiado.', true); })
+      .catch(function () { copiarViejo(t); });
+  } else {
+    copiarViejo(t);
+  }
+}
+
+function copiarViejo(t) {
+  var ta = document.createElement('textarea');
+  ta.value = t;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  ta.setSelectionRange(0, t.length);
+  try {
+    document.execCommand('copy');
+    aviso('avisoCrear', 'Enlace copiado.', true);
+  } catch (e) {
+    aviso('avisoCrear', 'No pude copiar. Mantén el dedo sobre el enlace para copiarlo.', false);
+  }
+  document.body.removeChild(ta);
+}
+
+/* ------------------------------------------------------------------ listas */
+
+function pintarPedidos(lista) {
+  return lista.map(function (p) {
+    var notas = p.notas
+      ? '<div class="notita">' + esc(p.notas) + '</div>' : '';
+    var accion = p.estado === 'descargado'
+      ? '<button class="btn-min" onclick="rebajar(\'' + esc(p.id) + '\')">Volver a bajar</button>'
+      : '';
+    return '<div class="item g-ped">' +
+      '<div class="celda" data-rot="Pedido"><span class="valor mono">' + esc(p.id) + '</span></div>' +
+      '<div class="celda" data-rot="Cliente"><span class="valor">' + esc(p.cliente) + notas + '</span></div>' +
+      '<div class="celda" data-rot="Fecha"><span class="valor mono">' + esc(p.fecha) + '</span></div>' +
+      '<div class="celda" data-rot="Cantidad"><span class="valor">' + esc(p.cantidad) + '</span></div>' +
+      '<div class="celda" data-rot="Forma"><span class="valor">' + esc(p.orientacion || 'horizontal') + '</span></div>' +
+      '<div class="celda" data-rot="Estado"><span class="valor"><span class="pill p-' + esc(p.estado) + '">' +
+        esc(ETIQUETA[p.estado] || p.estado) + '</span></span></div>' +
+      '<div class="acciones">' + accion + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function pintarAccesos(lista) {
+  return lista.map(function (a) {
+    var acciones = a.estado === 'nuevo'
+      ? '<button class="btn-min" onclick="reenviar(\'' + esc(a.token) + '\',\'' + esc(a.cliente) + '\')">Compartir</button>' +
+        '<button class="btn-min peligro" onclick="cancelar(\'' + esc(a.token) + '\')">Cancelar</button>'
+      : '';
+    return '<div class="item g-acc">' +
+      '<div class="celda" data-rot="Cliente"><span class="valor">' + esc(a.cliente) + '</span></div>' +
+      '<div class="celda" data-rot="Creado"><span class="valor mono">' + esc(a.creado) + '</span></div>' +
+      '<div class="celda" data-rot="Estado"><span class="valor"><span class="pill p-' + esc(a.estado) + '">' +
+        esc(ETIQUETA[a.estado] || a.estado) + '</span></span></div>' +
+      '<div class="celda" data-rot="Pedido"><span class="valor mono">' + esc(a.pedido || '—') + '</span></div>' +
+      '<div class="acciones">' + acciones + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function refrescar() {
+  var d;
+  try { d = await api('listar', { pass: PASS }); } catch (e) { return; }
+  datos = d;
+
+  document.getElementById('listaPedidos').innerHTML = pintarPedidos(d.pedidos);
+  document.getElementById('sinPedidos').classList.toggle('oculto', d.pedidos.length > 0);
+  document.getElementById('cabPed').style.display = d.pedidos.length ? '' : 'none';
+
+  document.getElementById('listaAccesos').innerHTML = pintarAccesos(d.accesos);
+  document.getElementById('sinAccesos').classList.toggle('oculto', d.accesos.length > 0);
+  document.getElementById('cabAcc').style.display = d.accesos.length ? '' : 'none';
+
+  var pedListos = d.pedidos.filter(function (p) { return p.estado === 'descargado'; }).length;
+  var accViejos = d.accesos.filter(function (a) {
+    return a.estado === 'usado' || a.estado === 'cancelado';
+  }).length;
+
+  var bp = document.getElementById('btnVaciarPed');
+  bp.classList.toggle('oculto', pedListos === 0);
+  bp.textContent = 'Vaciar ' + pedListos;
+
+  var ba = document.getElementById('btnVaciarAcc');
+  ba.classList.toggle('oculto', accViejos === 0);
+  ba.textContent = 'Vaciar ' + accViejos;
+}
+
+/* ----------------------------------------------------------------- acciones */
+
+function reenviar(token, cliente) {
+  ultimoEnlace = urlCliente(token);
+  ultimoCliente = cliente;
+  compartir();
+}
+
+async function rebajar(id) {
+  try {
+    await api('autorizar', { pass: PASS, pedido: id });
+    aviso('avisoCrear', id + ' regresó a la cola. CREDEN-CIA lo baja en un momento.', true);
+    refrescar();
+  } catch (e) { aviso('avisoCrear', e.message, false); }
+}
+
+async function cancelar(token) {
+  try { await api('cancelarAcceso', { pass: PASS, token: token }); refrescar(); }
+  catch (e) { aviso('avisoCrear', e.message, false); }
+}
+
+/* ------------------------------------------------------------------ vaciar */
+
+function preguntarVaciar(cual) {
+  var esPed = cual === 'pedidos';
+  var n = esPed
+    ? datos.pedidos.filter(function (p) { return p.estado === 'descargado'; }).length
+    : datos.accesos.filter(function (a) {
+        return a.estado === 'usado' || a.estado === 'cancelado';
+      }).length;
+
+  document.getElementById('modalTitulo').textContent =
+    esPed ? 'Vaciar ' + n + ' pedido' + (n === 1 ? '' : 's')
+          : 'Vaciar ' + n + ' enlace' + (n === 1 ? '' : 's');
+
+  document.getElementById('modalTexto').textContent = esPed
+    ? 'Se quitan de la lista los que ya están en tu PC. Pasan a la hoja Historial pedidos '
+      + 'de tu Google Sheet, y las fotos no se tocan.'
+    : 'Se quitan de la lista los enlaces usados y cancelados. Pasan a la hoja '
+      + 'Historial accesos de tu Google Sheet.';
+
+  document.getElementById('modalSi').onclick = function () { vaciar(cual); };
+  document.getElementById('modal').classList.add('on');
+}
+
+function cerrarModal() { document.getElementById('modal').classList.remove('on'); }
+
+async function vaciar(cual) {
+  var btn = document.getElementById('modalSi');
+  btn.disabled = true;
+  btn.textContent = 'Vaciando…';
+  try {
+    var r = await api(cual === 'pedidos' ? 'vaciarPedidos' : 'vaciarAccesos', { pass: PASS });
+    cerrarModal();
+    aviso('avisoCrear', r.movidos + ' movido' + (r.movidos === 1 ? '' : 's') +
+                        ' al historial de tu Google Sheet.', true);
+    refrescar();
+  } catch (e) {
+    cerrarModal();
+    aviso('avisoCrear', e.message, false);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Sí, vaciar';
+}
+</script>
+</body>
+</html>
