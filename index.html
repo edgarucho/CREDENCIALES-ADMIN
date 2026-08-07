@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credenciales — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400;75..100,500;75..100,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241d16; --paper:#f6efe5; --accent:#c5572a;
+    --line:#3a3128; --muted:#9a8d7f; --panel:#2e2720;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--paper);
+       font-family:Archivo,system-ui,sans-serif;font-size:14px;line-height:1.55}
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 20px 70px}
+
+  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+           color:var(--muted);font-weight:500;font-stretch:87%}
+  h1{font-size:26px;font-weight:700;margin:5px 0 24px;letter-spacing:-.02em}
+  h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;
+     color:var(--muted);margin:32px 0 12px;font-stretch:87%}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+  label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+        color:var(--muted);font-weight:500;margin-bottom:5px;font-stretch:87%}
+  input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:7px;
+        background:var(--ink);font:inherit;color:var(--paper)}
+  input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+  .btn{background:var(--accent);color:#fff;border:none;padding:11px 22px;border-radius:7px;
+       font:inherit;font-weight:500;cursor:pointer;white-space:nowrap}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-min{background:none;border:1px solid var(--line);color:var(--paper);
+           padding:6px 13px;border-radius:6px;font:inherit;font-size:12.5px;cursor:pointer}
+  .btn-min:hover{border-color:var(--accent);color:var(--accent)}
+
+  .fila{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .fila>div{flex:1;min-width:180px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+     color:var(--muted);font-weight:500;padding:0 12px 9px;font-stretch:87%}
+  td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:middle}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+
+  .pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;
+        letter-spacing:.06em;text-transform:uppercase;font-weight:500;font-stretch:87%}
+  .p-nuevo{background:rgba(197,87,42,.18);color:#e8926b}
+  .p-autorizado{background:rgba(120,160,110,.18);color:#9dc48c}
+  .p-descargado,.p-usado,.p-cancelado{background:rgba(255,255,255,.07);color:var(--muted)}
+
+  .vacio{padding:26px 12px;color:var(--muted);text-align:center;border-top:1px solid var(--line)}
+  .aviso{margin-top:14px;padding:12px 14px;border-radius:7px;font-size:13.5px;display:none}
+  .aviso.ok{display:block;background:rgba(120,160,110,.14);color:#9dc48c}
+  .aviso.mal{display:block;background:rgba(197,87,42,.16);color:#e8926b}
+
+  .puerta{max-width:340px;margin:70px auto}
+  .oculto{display:none}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div id="puerta" class="puerta">
+    <div class="eyebrow">Foto Estudio Graciela</div>
+    <h1>Credenciales</h1>
+    <div class="panel">
+      <label for="pass">Contraseña</label>
+      <input type="password" id="pass" onkeydown="if(event.key==='Enter')entrar()">
+      <div style="margin-top:14px"><button class="btn" id="btnEntrar" onclick="entrar()">Entrar</button></div>
+      <div class="aviso" id="avisoPuerta"></div>
+    </div>
+  </div>
+
+  <div id="panel" class="oculto">
+    <div class="eyebrow">Foto Estudio Graciela</div>
+    <h1>Credenciales</h1>
+
+    <div class="panel">
+      <div class="fila">
+        <div>
+          <label for="cliente">Nombre del cliente</label>
+          <input type="text" id="cliente" placeholder="Escuela Benito Juárez"
+                 onkeydown="if(event.key==='Enter')crear()">
+        </div>
+        <button class="btn" id="btnCrear" onclick="crear()">Crear enlace</button>
+      </div>
+      <div class="aviso" id="avisoCrear"></div>
+    </div>
+
+    <h2>Pedidos</h2>
+    <table>
+      <thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Cant.</th>
+                 <th>Notas</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="tbPedidos"></tbody>
+    </table>
+    <div class="vacio oculto" id="sinPedidos">Todavía no llega ningún pedido.</div>
+
+    <h2>Enlaces</h2>
+    <table>
+      <thead><tr><th>Cliente</th><th>Creado</th><th>Estado</th><th>Pedido</th><th></th></tr></thead>
+      <tbody id="tbAccesos"></tbody>
+    </table>
+    <div class="vacio oculto" id="sinAccesos">Todavía no has creado enlaces.</div>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+var PASS = '';
+
+async function api(accion, datos) {
+  var r = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ accion: accion }, datos || {}))
+  });
+  var d = await r.json();
+  if (!d.ok) throw new Error(d.error || 'Algo salió mal.');
+  return d;
+}
+
+function aviso(id, texto, ok) {
+  var el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = 'aviso ' + (ok ? 'ok' : 'mal');
+}
+
+function urlCliente(token) {
+  return CLIENTE_URL + '?t=' + token;
+}
+
+async function entrar() {
+  var p = document.getElementById('pass').value;
+  var btn = document.getElementById('btnEntrar');
+  btn.disabled = true;
+  try {
+    await api('entrarAdmin', { pass: p });
+    PASS = p;
+    document.getElementById('puerta').classList.add('oculto');
+    document.getElementById('panel').classList.remove('oculto');
+    refrescar();
+    setInterval(refrescar, 20000);
+  } catch (e) {
+    btn.disabled = false;
+    aviso('avisoPuerta', e.message, false);
+  }
+}
+
+async function crear() {
+  var cliente = document.getElementById('cliente').value;
+  var btn = document.getElementById('btnCrear');
+  btn.disabled = true;
+  try {
+    var r = await api('crearAcceso', { pass: PASS, cliente: cliente });
+    document.getElementById('cliente').value = '';
+    copiar(urlCliente(r.token));
+    aviso('avisoCrear', 'Enlace de ' + r.cliente + ' copiado. Mándaselo por WhatsApp.', true);
+    refrescar();
+  } catch (e) {
+    aviso('avisoCrear', e.message, false);
+  }
+  btn.disabled = false;
+}
+
+function copiar(texto) {
+  if (navigator.clipboard) { navigator.clipboard.writeText(texto); return; }
+  var ta = document.createElement('textarea');
+  ta.value = texto; document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+
+async function refrescar() {
+  var d;
+  try { d = await api('listar', { pass: PASS }); } catch (e) { return; }
+
+  document.getElementById('tbPedidos').innerHTML = d.pedidos.map(function (p) {
+    var accion = p.estado === 'nuevo'
+      ? '<button class="btn-min" onclick="autorizar(\'' + p.id + '\')">Autorizar</button>' : '';
+    return '<tr><td class="mono">' + esc(p.id) + '</td><td>' + esc(p.cliente) + '</td>' +
+           '<td class="mono">' + esc(p.fecha) + '</td><td>' + esc(p.cantidad) + '</td>' +
+           '<td>' + esc(p.notas) + '</td>' +
+           '<td><span class="pill p-' + esc(p.estado) + '">' + esc(p.estado) + '</span></td>' +
+           '<td style="text-align:right">' + accion + '</td></tr>';
+  }).join('');
+  document.getElementById('sinPedidos').classList.toggle('oculto', d.pedidos.length > 0);
+
+  document.getElementById('tbAccesos').innerHTML = d.accesos.map(function (a) {
+    var acciones = a.estado === 'nuevo'
+      ? '<button class="btn-min" onclick="copiar(urlCliente(\'' + a.token + '\'))">Copiar enlace</button> ' +
+        '<button class="btn-min" onclick="cancelar(\'' + a.token + '\')">Cancelar</button>' : '';
+    return '<tr><td>' + esc(a.cliente) + '</td><td class="mono">' + esc(a.creado) + '</td>' +
+           '<td><span class="pill p-' + esc(a.estado) + '">' + esc(a.estado) + '</span></td>' +
+           '<td class="mono">' + esc(a.pedido) + '</td>' +
+           '<td style="text-align:right">' + acciones + '</td></tr>';
+  }).join('');
+  document.getElementById('sinAccesos').classList.toggle('oculto', d.accesos.length > 0);
+}
+
+async function autorizar(id) {
+  try { await api('autorizar', { pass: PASS, pedido: id }); refrescar(); }
+  catch (e) { aviso('avisoCrear', e.message, false); }
+}
+
+async function cancelar(token) {
+  try { await api('cancelarAcceso', { pass: PASS, token: token }); refrescar(); }
+  catch (e) { aviso('avisoCrear', e.message, false); }
+}
+</script>
+</body>
+</html>
